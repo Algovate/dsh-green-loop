@@ -22,6 +22,10 @@ marketplace entry.
 - Release tag: `v0.1.0`.
 - Demo GIF: `docs/demo.gif` (960×540, 24 s, 12.5 fps, 2.1 MB), reproducible from
   `docs/demo.html`; uploaded as a release asset.
+- **npm: published `dsh-green-loop@0.1.0`**, `latest` points to it. The brief
+  `0.0.0-stage` placeholder from npm's staged release was replaced automatically.
+- A fresh temp profile installed `dsh-green-loop@0.1.0` from the registry and imported the
+  full plugin schema (`--dump-config-schema` exit 0, `green-loop` present).
 
 ## 1. Identity
 
@@ -53,7 +57,7 @@ Check the packed file list includes:
 
 The `files` field already includes these; `npm pack --dry-run` is the authority.
 
-## 3. Publish
+## 3. Publish (done for 0.1.0)
 
 ```sh
 npm publish --access public
@@ -69,7 +73,7 @@ dsh plugin --profile <test-profile> add dsh-green-loop@0.1.0
 dsh --profile <test-profile> --dump-config | grep -A2 'green-loop'
 ```
 
-Then boot the Web profile, open a session, and confirm:
+Verified for `dsh-green-loop@0.1.0` in a fresh profile. Then boot the Web profile, open a session, and confirm:
 
 - the composer dock appears;
 - **Arm** resolves a command;

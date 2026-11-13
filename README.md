@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/algovate/dsh-green-loop/actions/workflows/ci.yml/badge.svg)](https://github.com/algovate/dsh-green-loop/actions/workflows/ci.yml)
 [![GitHub](https://img.shields.io/badge/GitHub-algovate%2Fdsh--green--loop-181717?logo=github)](https://github.com/algovate/dsh-green-loop)
+[![npm](https://img.shields.io/npm/v/dsh-green-loop)](https://www.npmjs.com/package/dsh-green-loop)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 
@@ -31,10 +32,10 @@ This is deterministic verification, not another model reviewing the model:
 ## Install
 
 ```sh
-dsh plugin --profile <profile> add /absolute/path/to/dsh-green-loop
+dsh plugin --profile <profile> add dsh-green-loop@0.1.0
 ```
 
-Or install the release tarball / directory from **Settings → Plugins**:
+Or install a local checkout / release tarball from **Settings → Plugins**:
 
 ```sh
 dsh plugin --profile <profile> add ./dsh-green-loop-0.1.0.tgz

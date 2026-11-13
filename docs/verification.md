@@ -95,6 +95,14 @@ curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:59567/green-loop/api/st
 
 结果：`401`，说明路由已注册且 `connection.requestRejection` 生效。
 
+## npm 发布与安装
+
+- `npm publish --access public` 完成，`npm view dsh-green-loop version` → `0.1.0`，
+  `dist-tags.latest` → `0.1.0`。
+- 全新 temp profile 执行 `dsh plugin add dsh-green-loop@0.1.0` 成功，
+  `--dump-config-schema` 退出 0 且包含 `green-loop`。
+- npm staged release 期间短暂出现 `0.0.0-stage` 占位版本，随后被 0.1.0 替换。
+
 ## 安装状态
 
 `plugin_manager install_bundle` 返回 `application: applied`；Loader 行 `include:green-loop` 为 active。
