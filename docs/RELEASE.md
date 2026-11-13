@@ -1,7 +1,7 @@
 # Release checklist
 
-This package is prepared for an npm release and a DSH plugin-market listing. The remaining
-steps need repository and registry accounts.
+This package is prepared for an npm release and a DSH plugin-market listing. The public
+repository exists; the remaining steps need npm credentials and launch materials.
 
 ## Current status (2026-11-13)
 
@@ -16,15 +16,18 @@ steps need repository and registry accounts.
   resolution cache (`@deepseek-ai/cordis` imported from the old source path). Install the tarball
   in a fresh profile or restart the Host after switching channels.
 - npm name `dsh-green-loop` is available (registry returns 404).
-- `repository` / `homepage` are intentionally absent until the public repo exists.
+- Public repository: https://github.com/Algovate/dsh-green-loop (main, CI green); `repository`,
+  `homepage`, and `bugs` are set in `package.json`.
+- Release tag: `v0.1.0`.
 
 ## 1. Identity
 
-- [ ] Create the public GitHub repository (suggested name: `dsh-green-loop`).
-- [ ] Add `repository` and `homepage` to `package.json`; keep `author` as the publisher.
-- [ ] Confirm the npm name `dsh-green-loop` is still available:
-      `npm view dsh-green-loop version`.
-- [ ] Push the package and tag the release: `git tag v0.1.0`.
+- [x] Create the public GitHub repository: https://github.com/Algovate/dsh-green-loop.
+- [x] Add `repository`, `homepage`, and `bugs` to `package.json`; `author` is `Algovate`.
+- [x] Confirm the npm name `dsh-green-loop` is available:
+      `npm view dsh-green-loop version` → 404.
+- [x] Push `main`; GitHub Actions CI is green.
+- [x] Tag the release: `v0.1.0`.
 
 ## 2. Pre-flight
 
