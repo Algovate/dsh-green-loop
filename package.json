@@ -1,0 +1,83 @@
+{
+  "name": "dsh-green-loop",
+  "version": "0.1.0",
+  "description": "Keep a coding agent working until the project check passes: turn-end checks, failure steering, tools, and a composer dock.",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "engine.js",
+    "detect.js",
+    "loop.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "README.zh.md",
+    "CHANGELOG.md",
+    "SECURITY.md",
+    "docs"
+  ],
+  "engines": {
+    "node": ">=22.19",
+    "dsh": ">=0.2.2-0 <0.3.0"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    },
+    "manifestVersion": 1
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "~4.1.0",
+    "@deepseek-ai/dsh-commands": "^0.2.2-rc.1",
+    "@deepseek-ai/dsh-llm": "^0.2.2-rc.1",
+    "@deepseek-ai/dsh-tools": "^0.2.2-rc.1",
+    "@deepseek-ai/schemastery": "~3.19.0"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "agent",
+    "testing",
+    "test",
+    "automation",
+    "tdd",
+    "green-loop",
+    "quality"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "check": "node --check index.js && node --check client.js && node --check engine.js && node --check detect.js && node --check loop.js",
+    "prepublishOnly": "node --test test/*.test.js && node --check index.js && node --check client.js && node --check engine.js && node --check detect.js && node --check loop.js"
+  },
+  "main": "index.js",
+  "author": "Algovate",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/algovate/dsh-green-loop.git"
+  },
+  "homepage": "https://github.com/algovate/dsh-green-loop#readme",
+  "bugs": {
+    "url": "https://github.com/algovate/dsh-green-loop/issues"
+  }
+}

@@ -1,0 +1,8 @@
+# Green Loop bundle layer.
+#
+# `dsh plugin add dsh-green-loop` installs the package and appends it to the
+# profile's `dsh.profile.bundles`. This layer inserts the Host row; the
+# package's `dsh.client` declaration attaches the composer dock.
+- insert:
+    - id: green-loop
+      name: 'dsh-green-loop'

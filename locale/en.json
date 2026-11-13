@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Green Loop",
+    "description": "Arm once and let a coding agent keep fixing until the project's check command passes. Failed checks are sent back as steering; the loop stops at a bounded attempt budget or when output stops changing.",
+    "detail": "docs/DETAIL.md"
+  }
+}
