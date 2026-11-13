@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Green Loop demo</title>
+<style>
+  :root {
+    --bg: #0a0d13;
+    --panel: #121620;
+    --panel-2: #171c28;
+    --border: #252c3b;
+    --border-soft: #1d2432;
+    --text: #e8ecf3;
+    --muted: #95a0b3;
+    --dim: #6b768a;
+    --blue: #3b82f6;
+    --blue-soft: rgba(59,130,246,.14);
+    --green: #2fd39a;
+    --green-soft: rgba(47,211,154,.13);
+    --red: #ff6b6b;
+    --red-soft: rgba(255,107,107,.12);
+    --amber: #f5b84b;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { width: 960px; height: 540px; margin: 0; overflow: hidden; background: var(--bg); }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif; color: var(--text); -webkit-font-smoothing: antialiased; }
+  #stage { position: relative; width: 960px; height: 540px; overflow: hidden; background:
+    radial-gradient(1200px 500px at 15% -10%, rgba(59,130,246,.16), transparent 60%),
+    radial-gradient(900px 500px at 95% 110%, rgba(47,211,154,.10), transparent 60%),
+    var(--bg); }
+  .topbar { position: absolute; left: 32px; right: 32px; top: 18px; height: 28px; display: flex; align-items: center; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 9px; font-size: 13px; letter-spacing: .01em; }
+  .brand .mark { width: 22px; height: 22px; border-radius: 7px; background: linear-gradient(145deg,#1b8f68,#0f6e50); display: grid; place-items: center; color: #fff; font-size: 14px; box-shadow: 0 4px 12px rgba(15,110,80,.35); }
+  .brand b { font-weight: 650; }
+  .brand .sub { color: var(--dim); font-size: 11px; }
+  .demo-pill { color: #a8b2c4; border: .5px solid #2e3748; background: rgba(255,255,255,.03); border-radius: 999px; padding: 4px 9px; font-size: 10px; letter-spacing: .12em; }
+  .window { position: absolute; left: 60px; top: 62px; width: 840px; height: 432px; border: .5px solid var(--border); border-radius: 18px; background: linear-gradient(180deg, rgba(22,27,38,.96), rgba(15,19,28,.98)); box-shadow: 0 30px 80px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.02) inset; overflow: hidden; }
+  .window-head { height: 34px; display: flex; align-items: center; gap: 6px; padding: 0 13px; border-bottom: .5px solid var(--border-soft); background: rgba(255,255,255,.015); }
+  .tdot { width: 9px; height: 9px; border-radius: 50%; background: #2b3242; }
+  .tdot.r { background: #3a2a2d; } .tdot.y { background: #3a3628; } .tdot.g { background: #223a33; }
+  .window-title { margin-left: 8px; color: var(--muted); font-size: 11px; }
+  .window-meta { margin-left: auto; color: var(--dim); font-size: 10px; font-family: var(--mono); }
+  .chat { position: absolute; left: 0; right: 0; top: 34px; bottom: 104px; padding: 14px 22px 18px; overflow: hidden; }
+  .msg { display: flex; margin: 0 0 10px; opacity: 0; transform: translateY(6px); }
+  .msg.user { justify-content: flex-end; }
+  .bubble { max-width: 76%; padding: 9px 13px; border-radius: 13px; font-size: 12.5px; line-height: 1.5; }
+  .msg.user .bubble { background: #1d3f70; color: #eaf2ff; border-bottom-right-radius: 4px; }
+  .msg.assistant .bubble { background: #1a202c; border: .5px solid #283144; color: #dbe2ee; border-bottom-left-radius: 4px; }
+  .msg .who { font-size: 9px; letter-spacing: .08em; color: var(--dim); margin: 0 0 4px 2px; text-transform: uppercase; }
+  .typing { display: inline-flex; gap: 4px; align-items: center; height: 30px; padding: 0 6px; opacity: 0; }
+  .typing i { width: 5px; height: 5px; border-radius: 50%; background: #6f7b91; display: block; }
+  .card { border: .5px solid var(--border); border-radius: 12px; background: #111620; overflow: hidden; margin: 0 0 10px; opacity: 0; transform: translateY(6px); }
+  .term-head { height: 30px; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-bottom: .5px solid var(--border-soft); background: rgba(255,255,255,.015); font-family: var(--mono); font-size: 11px; color: #b9c3d3; }
+  .term-head .spinner { color: var(--blue); width: 12px; text-align: center; }
+  .term-head .chip { margin-left: auto; border-radius: 999px; padding: 2px 8px; font-size: 9px; letter-spacing: .05em; border: .5px solid #343d4e; color: var(--muted); }
+  .term-head .chip.red { color: #ffb3b3; border-color: rgba(255,107,107,.4); background: var(--red-soft); }
+  .term-head .chip.green { color: #a9f3d5; border-color: rgba(47,211,154,.4); background: var(--green-soft); }
+  .term-body { padding: 9px 12px 10px; font-family: var(--mono); font-size: 10.5px; line-height: 1.55; color: #aeb9c9; white-space: normal; }
+  .term-line { opacity: 0; display: block; white-space: pre; }
+  .term-line.fail { color: #ff9b9b; }
+  .term-line.pass { color: #8ce9c4; }
+  .term-line.dim { color: #6f7b90; }
+  .steer { border-color: rgba(255,107,107,.34); background: linear-gradient(180deg, rgba(255,107,107,.10), rgba(255,107,107,.04)); }
+  .steer-head { display: flex; align-items: center; gap: 7px; padding: 9px 12px 0; color: #ffc4c4; font-size: 10px; letter-spacing: .07em; text-transform: uppercase; }
+  .steer-head .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); }
+  .steer-body { padding: 6px 12px 10px; color: #f0d4d4; font-size: 11.5px; line-height: 1.5; }
+  .steer-body code { font-family: var(--mono); font-size: 10.5px; color: #ffd7d7; background: rgba(255,255,255,.05); padding: 1px 4px; border-radius: 4px; }
+  .diff-body { padding: 9px 12px 10px; font-family: var(--mono); font-size: 10.5px; line-height: 1.55; white-space: normal; }
+  .diff-line { display: block; opacity: 0; white-space: pre; }
+  .diff-line.minus { color: #ff9b9b; background: rgba(255,107,107,.08); }
+  .diff-line.plus { color: #8ce9c4; background: rgba(47,211,154,.07); }
+  .composer-wrap { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 22px 13px; background: linear-gradient(180deg, rgba(15,19,28,0), rgba(15,19,28,.92) 24%); }
+  .dock { height: 36px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 12px; border: .5px solid #2a3344; border-radius: 11px; background: rgba(22,28,39,.96); box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+  .dock-icon { color: #8d99ab; font-size: 14px; line-height: 1; }
+  .dock-dot { width: 6px; height: 6px; border-radius: 50%; background: #596579; transition: none; }
+  .dock-name { color: #aeb8c8; font-size: 11px; }
+  .dock-status { color: #dbe3ef; font-size: 11.5px; font-weight: 550; }
+  .dock-cmd { color: #77839a; font-family: var(--mono); font-size: 10.5px; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dock-actions { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+  .btn { border: .5px solid #354054; background: transparent; color: #bcc6d7; border-radius: 999px; padding: 4px 10px; font-size: 10.5px; line-height: 1.2; }
+  .btn.active { border-color: rgba(59,130,246,.55); color: #b9d2ff; background: rgba(59,130,246,.10); }
+  .composer { height: 42px; margin-top: 8px; display: flex; align-items: center; padding: 0 12px; border: .5px solid #2a3344; border-radius: 12px; background: rgba(18,23,34,.9); color: #5f6b80; font-size: 12px; }
+  .composer .send { margin-left: auto; width: 24px; height: 24px; border-radius: 50%; background: #2a3344; color: #9eabbd; display: grid; place-items: center; font-size: 12px; }
+  .endcard { position: absolute; left: 50%; top: 50%; width: 500px; transform: translate(-50%,-46%) scale(.98); opacity: 0; padding: 28px 30px 24px; border: .5px solid rgba(47,211,154,.3); border-radius: 20px; background: linear-gradient(180deg, rgba(18,28,27,.98), rgba(13,19,24,.98)); box-shadow: 0 30px 90px rgba(0,0,0,.6), 0 0 60px rgba(47,211,154,.08); text-align: center; }
+  .end-badge { width: 44px; height: 44px; margin: 0 auto 13px; border-radius: 50%; display: grid; place-items: center; background: var(--green-soft); border: 1px solid rgba(47,211,154,.45); color: var(--green); font-size: 23px; }
+  .endcard h2 { margin: 0 0 7px; font-size: 26px; letter-spacing: -.02em; font-weight: 700; }
+  .endcard p { margin: 0 0 16px; color: #a6b3c1; font-size: 12.5px; line-height: 1.5; }
+  .endcard .repo { display: inline-block; color: #9fe9cd; font-family: var(--mono); font-size: 10.5px; border: .5px solid rgba(47,211,154,.25); background: rgba(47,211,154,.06); padding: 5px 10px; border-radius: 999px; }
+  .endcard .sim { margin-top: 13px; color: #5f6c7c; font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; }
+  .stage-dim { position: absolute; inset: 0; background: rgba(4,7,12,.66); opacity: 0; }
+  .cursor { position: absolute; width: 18px; height: 22px; opacity: 0; z-index: 20; pointer-events: none; filter: drop-shadow(0 3px 6px rgba(0,0,0,.55)); }
+  .cursor svg { display: block; width: 18px; height: 22px; }
+  .click-ring { position: absolute; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.8); transform: translate(-50%,-50%) scale(.3); opacity: 0; z-index: 19; pointer-events: none; }
+  .caption { position: absolute; right: 32px; bottom: 16px; color: #465164; font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; }
+  .fade { position: absolute; inset: 0; background: #000; opacity: 0; z-index: 40; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="topbar">
+    <div class="brand"><span class="mark">↻</span><b>Green Loop</b><span class="sub">DeepSeek Harness plugin</span></div>
+    <div class="demo-pill">DEMO</div>
+  </div>
+
+  <main class="window">
+    <div class="window-head">
+      <span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span>
+      <span class="window-title">DSH · coding session</span>
+      <span class="window-meta">desktop / main</span>
+    </div>
+
+    <div class="chat" id="chat">
+      <div class="msg user" id="msg-user"><div><div class="who">You</div><div class="bubble">Add a <b>slugify</b> helper and make sure the tests pass.</div></div></div>
+      <div class="typing" id="typing"><i></i><i></i><i></i></div>
+      <div class="msg assistant" id="msg-plan"><div><div class="who">DSH</div><div class="bubble">I’ll add <b>slugify</b>, cover spaces and punctuation, and add tests.</div></div></div>
+      <div class="msg assistant" id="msg-done"><div><div class="who">DSH</div><div class="bubble">Implemented <b>src/slugify.ts</b> and 12 tests. All done.</div></div></div>
+
+      <div class="card" id="term1">
+        <div class="term-head"><span class="spinner" id="term1-spin">⠋</span><span>make test</span><span class="chip" id="term1-chip">running</span></div>
+        <div class="term-body">
+          <span class="term-line t1" data-at="0">$ make test</span>
+          <span class="term-line t1 dim" data-at=".15">running 12 tests…</span>
+          <span class="term-line t1 fail" data-at=".55">FAIL  src/slugify.test.ts</span>
+          <span class="term-line t1 fail" data-at=".68">  ● slugify › collapses repeated spaces</span>
+          <span class="term-line t1 fail" data-at=".78">    expected "hello-world", got "hello--world"</span>
+          <span class="term-line t1 fail" data-at=".86">Tests: 1 failed, 11 passed</span>
+          <span class="term-line t1 dim" data-at=".92">exit code: 1</span>
+        </div>
+      </div>
+
+      <div class="card steer" id="steer">
+        <div class="steer-head"><span class="dot"></span><span>Green Loop · steered into this turn</span></div>
+        <div class="steer-body">The project check failed (attempt 1/3): <code>exit 1</code>.<br>Do not claim the task is complete yet. Fix the cause, then finish the turn again.</div>
+      </div>
+
+      <div class="msg assistant" id="msg-fix"><div><div class="who">DSH</div><div class="bubble">The test caught a repeated-space case. Tightening the regex…</div></div></div>
+
+      <div class="card" id="diff">
+        <div class="term-head"><span style="color:#8d99ab">±</span><span>src/slugify.ts</span><span class="chip green">patched</span></div>
+        <div class="diff-body">
+          <span class="diff-line minus" data-at="0">- return input.replace(/\s+/g, '-')</span>
+          <span class="diff-line plus" data-at=".3">+ return input.trim().replace(/\s+/g, '-')</span>
+        </div>
+      </div>
+
+      <div class="card" id="term2">
+        <div class="term-head"><span class="spinner" id="term2-spin">⠋</span><span>make test</span><span class="chip" id="term2-chip">running</span></div>
+        <div class="term-body">
+          <span class="term-line t2" data-at="0">$ make test</span>
+          <span class="term-line t2 dim" data-at=".15">running 12 tests…</span>
+          <span class="term-line t2 pass" data-at=".55">PASS  src/slugify.test.ts</span>
+          <span class="term-line t2 pass" data-at=".72">Tests: 12 passed, 12 total</span>
+          <span class="term-line t2 dim" data-at=".86">exit code: 0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="composer-wrap">
+      <div class="dock" id="dock">
+        <span class="dock-icon">↻</span>
+        <span class="dock-dot" id="dock-dot"></span>
+        <span class="dock-name">Green Loop</span>
+        <span class="dock-status" id="dock-status">Off</span>
+        <span class="dock-cmd" id="dock-cmd">Auto-detect on arm</span>
+        <span class="dock-actions" id="dock-actions">
+          <button class="btn active" id="btn-arm">Arm</button>
+          <button class="btn" id="btn-disarm" style="display:none">Disarm</button>
+          <button class="btn" id="btn-run">Run now</button>
+          <button class="btn" id="btn-details">Details</button>
+        </span>
+      </div>
+      <div class="composer"><span>Ask DSH anything…</span><span class="send">↑</span></div>
+    </div>
+  </main>
+
+  <div class="stage-dim" id="dim"></div>
+  <div class="endcard" id="endcard">
+    <div class="end-badge">✓</div>
+    <h2>Green means done.</h2>
+    <p>Arm once. The agent keeps fixing until your checks pass.</p>
+    <div class="repo">github.com/Algovate/dsh-green-loop</div>
+    <div class="sim">Simulated demo · real plugin, real check loop</div>
+  </div>
+
+  <div class="click-ring" id="click-ring"></div>
+  <div class="cursor" id="cursor">
+    <svg viewBox="0 0 18 22" xmlns="http://www.w3.org/2000/svg"><path d="M2 1.5v16.2l4.2-4.1 2.7 5.4 2.5-1.2-2.7-5.3H15L2 1.5Z" fill="#fff" stroke="#111" stroke-width="1"/></svg>
+  </div>
+  <div class="caption">Simulated demo</div>
+  <div class="fade" id="fade"></div>
+</div>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const ease = (v) => v < .5 ? 2*v*v : 1 - Math.pow(-2*v+2, 2)/2;
+  const fade = (t, a, b, c = Infinity, d = Infinity) => {
+    if (t < a) return 0;
+    if (t < b) return ease((t-a)/(b-a));
+    if (t <= c) return 1;
+    if (t < d) return 1 - ease((t-c)/(d-c));
+    return 0;
+  };
+  const setOpacity = (el, value, y = 0) => {
+    el.style.opacity = String(value);
+    el.style.transform = `translateY(${(1-value)*y}px)`;
+    el.style.display = value > 0 ? '' : 'none';
+  };
+  const setLines = (root, t, start, end) => {
+    const lines = [...root.querySelectorAll('.term-line')];
+    lines.forEach((line, i) => {
+      const at = Number(line.dataset.at || 0);
+      const appear = clamp((t - start - at * (end - start)) / .22, 0, 1);
+      line.style.opacity = String(appear);
+      line.style.display = appear > 0 ? 'block' : 'none';
+    });
+  };
+  const setDiffLines = (root, t, start) => {
+    const lines = [...root.querySelectorAll('.diff-line')];
+    lines.forEach((line) => {
+      const at = Number(line.dataset.at || 0);
+      const appear = clamp((t - start - at * 1.2) / .25, 0, 1);
+      line.style.opacity = String(appear);
+      line.style.display = appear > 0 ? 'block' : 'none';
+    });
+  };
+  const setDock = (t) => {
+    const dot = $('dock-dot'), status = $('dock-status'), cmd = $('dock-cmd');
+    const arm = $('btn-arm'), disarm = $('btn-disarm'), run = $('btn-run');
+    if (t < 2.05) {
+      dot.style.background = '#596579'; status.textContent = 'Off'; cmd.textContent = 'Auto-detect on arm';
+      arm.style.display = ''; disarm.style.display = 'none'; arm.classList.add('active');
+    } else if (t < 5.0) {
+      dot.style.background = 'var(--blue)'; status.textContent = 'Armed · make test'; cmd.textContent = 'runs at turn end';
+      arm.style.display = 'none'; disarm.style.display = ''; disarm.classList.remove('active');
+    } else if (t < 6.2) {
+      dot.style.background = 'var(--blue)'; status.textContent = 'Running checks · 1/3'; cmd.textContent = 'make test';
+      arm.style.display = 'none'; disarm.style.display = '';
+    } else if (t < 14.5) {
+      dot.style.background = 'var(--red)'; status.textContent = 'Fixing · 1/3'; cmd.textContent = 'make test';
+      arm.style.display = 'none'; disarm.style.display = '';
+    } else if (t < 16.0) {
+      dot.style.background = 'var(--blue)'; status.textContent = 'Running checks · 2/3'; cmd.textContent = 'make test';
+      arm.style.display = 'none'; disarm.style.display = '';
+    } else {
+      dot.style.background = 'var(--green)'; status.textContent = 'Green · 2/3'; cmd.textContent = 'make test';
+      arm.style.display = ''; disarm.style.display = 'none'; arm.classList.remove('active');
+    }
+    run.style.display = t >= 6.2 && t < 14.5 ? '' : (t < 5.0 || t >= 16.0 ? '' : 'none');
+    const running = (t >= 5.0 && t < 6.2) || (t >= 14.5 && t < 16.0);
+    dot.style.opacity = running ? String(.55 + .45 * Math.abs(Math.sin(t * 5))) : '1';
+  };
+  let armPoint = null;
+  const setCursor = (t) => {
+    const cursor = $('cursor'), ring = $('click-ring'), arm = $('btn-arm');
+    if (armPoint === null) {
+      const box = arm.getBoundingClientRect();
+      if (box.width > 0) armPoint = { x: box.left + box.width/2, y: box.top + box.height/2 };
+    }
+    const tx = armPoint?.x ?? 720, ty = armPoint?.y ?? 414;
+    const sx = 820, sy = 500;
+    if (t < 0.9 || t > 2.25) { cursor.style.opacity = '0'; ring.style.opacity = '0'; return; }
+    const p = ease(clamp((t - 0.9) / 1.1, 0, 1));
+    const x = sx + (tx - sx) * p, y = sy + (ty - sy) * p;
+    cursor.style.opacity = '1'; cursor.style.left = `${x}px`; cursor.style.top = `${y}px`;
+    const click = t > 1.9 && t < 2.35;
+    ring.style.left = `${tx}px`; ring.style.top = `${ty}px`;
+    ring.style.opacity = click ? String(1 - (t-1.9)/.45) : '0';
+    ring.style.transform = `translate(-50%,-50%) scale(${click ? .35 + (t-1.9)*2.2 : .3})`;
+  };
+  window.renderDemo = (t) => {
+    const user = $('msg-user'), typing = $('typing'), plan = $('msg-plan'), done = $('msg-done');
+    const term1 = $('term1'), steer = $('steer'), fix = $('msg-fix'), diff = $('diff'), term2 = $('term2');
+    setOpacity(user, 1);
+    setOpacity(typing, t < 0.6 ? 0 : fade(t, .6, 1.0, 2.4, 2.7));
+    setOpacity(plan, fade(t, 2.5, 3.0, 4.2, 4.5), 5);
+    setOpacity(done, fade(t, 4.2, 4.7), 5);
+    setOpacity(term1, fade(t, 5.0, 5.35), 6);
+    setOpacity(steer, fade(t, 6.7, 7.1), 6);
+    setOpacity(fix, fade(t, 9.0, 9.5), 5);
+    setOpacity(diff, fade(t, 10.4, 10.8), 6);
+    setOpacity(term2, fade(t, 14.4, 14.75), 6);
+    setLines(term1, t, 5.0, 6.1);
+    setDiffLines(diff, t, 10.5);
+    setLines(term2, t, 14.4, 15.9);
+    $('term1-spin').textContent = t < 6.2 ? '⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'[Math.floor(t*14)%10] : '✕';
+    $('term2-spin').textContent = t < 16.0 ? '⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'[Math.floor(t*14)%10] : '✓';
+    $('term1-chip').textContent = t < 6.2 ? 'running' : 'exit 1';
+    $('term1-chip').className = 'chip ' + (t < 6.2 ? '' : 'red');
+    $('term2-chip').textContent = t < 16.0 ? 'running' : 'exit 0';
+    $('term2-chip').className = 'chip ' + (t < 16.0 ? '' : 'green');
+    $('dock-cmd').style.opacity = t < 1.9 ? '0.8' : '1';
+    const typingEl = $('typing');
+    if (typingEl.style.display !== 'none') {
+      [...typingEl.children].forEach((dot, i) => {
+        dot.style.opacity = String(.3 + .7 * Math.abs(Math.sin(t * 3.2 + i * .9)));
+      });
+    }
+    const fadeEl = $('fade');
+    fadeEl.style.opacity = String(Math.min(1, Math.max(0, 1 - fade(t, 0, .45) + fade(t, 23.3, 23.95))));
+    setDock(t);
+    setCursor(t);
+    const dim = $('dim'), end = $('endcard');
+    const endIn = fade(t, 18.4, 19.2);
+    dim.style.opacity = String(endIn * .66);
+    end.style.opacity = String(endIn);
+    end.style.transform = `translate(-50%,-50%) scale(${.98 + endIn*.02})`;
+    // Smooth scroll to the active beat.
+    const chat = $('chat');
+    const max = Math.max(0, chat.scrollHeight - chat.clientHeight);
+    const bottomOf = (el) => Math.max(0, el.offsetTop + el.offsetHeight - chat.clientHeight + 14);
+    const steerTop = Math.max(0, steer.offsetTop - 10);
+    const key = [
+      [0, 0], [4.6, 0], [5.8, bottomOf(term1)], [7.2, bottomOf(term1)],
+      [8.0, steerTop], [10.2, steerTop], [11.0, steerTop],
+      [14.2, steerTop], [15.0, bottomOf(term2)], [16.8, bottomOf(term2)],
+      [17.6, max], [24, max],
+    ];
+    let target = 0;
+    if (t >= 5.0 && t <= 7.2) target = bottomOf(term1);
+    else if (t >= 14.4 && t <= 16.8) target = bottomOf(term2);
+    else {
+      for (let i = 0; i < key.length - 1; i++) {
+        const [t0, v0] = key[i], [t1, v1] = key[i+1];
+        if (t >= t0 && t <= t1) { target = v0 + (v1-v0) * ease((t-t0)/(t1-t0)); break; }
+        if (t > t1) target = v1;
+      }
+    }
+    chat.scrollTop = clamp(target, 0, max);
+  };
+  window.renderDemo(0);
+</script>
+</body>
+</html>

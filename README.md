@@ -7,6 +7,10 @@
 
 **Arm once. The agent keeps fixing until your project check passes.**
 
+![Green Loop demo: arm, failing check, steer, green](docs/demo.gif)
+
+<sub>The GIF is a simulated demo of the UI flow. The plugin itself is installed and verified; the real dock screenshot is [here](docs/dock.webp).</sub>
+
 ![Green Loop dock while armed](docs/dock.webp)
 
 `dsh-green-loop` is a DeepSeek Harness plugin for coding agents that do not stop at the

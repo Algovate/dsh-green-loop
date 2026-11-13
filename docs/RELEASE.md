@@ -1,7 +1,8 @@
 # Release checklist
 
 This package is prepared for an npm release and a DSH plugin-market listing. The public
-repository exists; the remaining steps need npm credentials and launch materials.
+repository and the 24-second demo GIF exist; the remaining steps need npm credentials and the
+marketplace entry.
 
 ## Current status (2026-11-13)
 
@@ -19,6 +20,8 @@ repository exists; the remaining steps need npm credentials and launch materials
 - Public repository: https://github.com/Algovate/dsh-green-loop (main, CI green); `repository`,
   `homepage`, and `bugs` are set in `package.json`.
 - Release tag: `v0.1.0`.
+- Demo GIF: `docs/demo.gif` (960×540, 24 s, 12.5 fps, 2.1 MB), reproducible from
+  `docs/demo.html`; uploaded as a release asset.
 
 ## 1. Identity
 
@@ -96,7 +99,7 @@ Suggested listing copy:
 
 ## 6. Launch
 
-- Record a 20–30 second GIF: Arm → failing test → steering message → agent fixes → green dock.
+- [x] Record the 24-second GIF: Arm → failing test → steering message → agent fixes → green dock.
 - Post in the DSH community with the one-line promise, not “another test plugin”.
 - Ask for five real users and iterate on the failure/steer experience first.
 - Keep `updated-week` cadence for the first month; the market surfaces recent updates.

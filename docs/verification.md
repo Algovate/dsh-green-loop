@@ -113,6 +113,11 @@ DSH_HOME=/tmp/gl-test dsh --profile gltest --dump-config-schema
 （从源码路径导入 `@deepseek-ai/cordis` 失败）。这是 DSH 安装通道切换的缓存行为；
 换新 profile 或重启 Host 即可。桌面 profile 已恢复为 link 开发状态。
 
+## 演示 GIF
+
+`docs/demo.gif`（960×540，24 s，300 帧，12.5 fps）由 `docs/demo.html` 的确定性时间轴逐帧截取后合成。
+它是 UI 流程的**模拟演示**，不是屏幕录制；GIF 内标注 DEMO / SIMULATED DEMO。真实插件已安装并验证。
+
 ## 尚未做的验证
 
 - **失败 → steer → 修复**：绿色路径已真实跑通；失败 steer 由引擎单测（fake agent 捕获 `steer`）

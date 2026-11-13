@@ -66,7 +66,7 @@ test('both locales carry display metadata and a detail document', async () => {
   assert.equal(zh.meta.title, '绿循环')
   assert.ok(zh.meta.description.length > 10)
   assert.equal(zh.meta.detail, 'docs/DETAIL.zh.md')
-  for (const file of ['docs/DETAIL.md', 'docs/DETAIL.zh.md', 'docs/dock.webp']) {
+  for (const file of ['docs/DETAIL.md', 'docs/DETAIL.zh.md', 'docs/dock.webp', 'docs/demo.gif']) {
     assert.equal(await exists(file), true, `${file} must exist`)
   }
 })

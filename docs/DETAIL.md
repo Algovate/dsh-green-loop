@@ -1,5 +1,9 @@
 # Green Loop
 
+![Green Loop demo: arm, failing check, steer, green](demo.gif)
+
+*Simulated demo of the UI flow. The plugin is installed and verified; the dock screenshot is below.*
+
 ![Green Loop dock while armed](dock.webp)
 
 **Arm once. The agent keeps fixing until your project check passes.**

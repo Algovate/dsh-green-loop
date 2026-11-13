@@ -17,5 +17,6 @@ First release.
 - Schemastery `Config` for command, timeout, attempts, output tail, cwd, and detection.
 - 42 unit/engine/client-manifest tests, package-manifest release tests, and a jsdom dock
   interaction test.
+- A 24-second demo GIF (`docs/demo.gif`) and its reproducible HTML source (`docs/demo.html`).
 
 Live verified on DSH 0.2.2-rc.3 Desktop: arm → turn-stopping → `make test` → green.
